@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.ComponentModel;
 using System.Security.Permissions;
 
@@ -10,44 +9,85 @@ using System.Security.Permissions;
  *                                  (thanks/credit to Josh Smith for feedback/hints)
  */
 
-namespace Hyper.ComponentModel {
-    public sealed class HyperTypeDescriptionProvider : TypeDescriptionProvider {
-        public static void Add(Type type) {
+namespace FastMember.Tests
+{
+    public sealed class HyperTypeDescriptionProvider : TypeDescriptionProvider
+    {
+        #region "Members"
+
+        private static readonly Dictionary<Type, ICustomTypeDescriptor> descriptors = new Dictionary<Type, ICustomTypeDescriptor>();
+
+        #endregion
+
+        #region "Constructors / Destructor"
+
+        public HyperTypeDescriptionProvider()
+            : this(typeof(object))
+        {
+        }
+
+        public HyperTypeDescriptionProvider(Type type)
+            : this(TypeDescriptor.GetProvider(type))
+        {
+        }
+
+        public HyperTypeDescriptionProvider(TypeDescriptionProvider parent)
+            : base(parent)
+        {
+        }
+
+        #endregion
+
+        #region "Static Methods"
+
+        public static void Add(Type type)
+        {
             TypeDescriptionProvider parent = TypeDescriptor.GetProvider(type);
             TypeDescriptor.AddProvider(new HyperTypeDescriptionProvider(parent), type);
         }
-        public HyperTypeDescriptionProvider() : this(typeof(object)) { }
-        public HyperTypeDescriptionProvider(Type type) : this(TypeDescriptor.GetProvider(type)) { }
-        public HyperTypeDescriptionProvider(TypeDescriptionProvider parent) : base(parent) { }
-        public static void Clear(Type type) {
-            lock (descriptors) {
+
+        public static void Clear(Type type)
+        {
+            lock (descriptors)
+            {
                 descriptors.Remove(type);
             }
         }
-        public static void Clear() {
-            lock (descriptors) {
+
+        public static void Clear()
+        {
+            lock (descriptors)
+            {
                 descriptors.Clear();
             }
         }
-        private static readonly Dictionary<Type, ICustomTypeDescriptor> descriptors = new Dictionary<Type, ICustomTypeDescriptor>();
-        public sealed override ICustomTypeDescriptor GetTypeDescriptor(Type objectType, object instance) {
+
+        #endregion
+
+        #region "Methods"
+
+        public sealed override ICustomTypeDescriptor GetTypeDescriptor(Type objectType, object instance)
+        {
             ICustomTypeDescriptor descriptor;
-            lock (descriptors) {
-                if (!descriptors.TryGetValue(objectType, out descriptor)) {
+            lock (descriptors)
+            {
+                if (!descriptors.TryGetValue(objectType, out descriptor))
+                {
                     try
                     {
-                        descriptor = BuildDescriptor(objectType);
+                        descriptor = this.BuildDescriptor(objectType);
                     }
                     catch
                     {
                         return base.GetTypeDescriptor(objectType, instance);
                     }
                 }
+
                 return descriptor;
             }
         }
 #pragma warning disable CS0618, CS0612
-        [ReflectionPermission( SecurityAction.Assert, Flags = ReflectionPermissionFlag.AllFlags)]
+        [ReflectionPermission(SecurityAction.Assert, Flags = ReflectionPermissionFlag.AllFlags)]
 #pragma warning restore CS0618, CS0612
         private ICustomTypeDescriptor BuildDescriptor(Type objectType)
         {
@@ -65,12 +105,15 @@ namespace Hyper.ComponentModel {
                 return descriptor;
             }
             catch
-            {   // rollback and throw
+            {
+                // rollback and throw
                 // (perhaps because the specific caller lacked permissions;
                 // another caller may be successful)
                 descriptors.Remove(objectType);
                 throw;
             }
         }
+
+        #endregion
     }
 }

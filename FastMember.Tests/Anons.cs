@@ -1,54 +1,67 @@
 ﻿using FastMember;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace FastMemberTests
+namespace FastMember.Tests
 {
+    [TestClass]
     public class Anons
     {
-        [Fact]
-        public void TestAnonTypeAccess()
-        {
-            var obj = new {A = 123, B = "def"};
+        #region "Nested Types"
 
-            var accessor = ObjectAccessor.Create(obj);
-            Assert.Equal(123, accessor["A"]);
-            Assert.Equal("def", accessor["B"]);
+        private sealed class Private
+        {
+            #region "Properties"
+
+            public int A { get; set; }
+
+            public string B { get; set; }
+
+            #endregion
         }
-        [Fact]
+
+        #endregion
+
+        #region "Methods"
+
+        [TestMethod]
         public void TestAnonCtor()
         {
-            var obj = new {A = 123, B = "def"};
+            var obj = new { A = 123, B = "def" };
 
             var accessor = TypeAccessor.Create(obj.GetType());
-            Assert.False(accessor.CreateNewSupported);
+            Assert.IsFalse(accessor.CreateNewSupported);
         }
 
-        [Fact]
+        [TestMethod]
+        public void TestAnonTypeAccess()
+        {
+            var obj = new { A = 123, B = "def" };
+
+            var accessor = ObjectAccessor.Create(obj);
+            Assert.AreEqual(123, accessor["A"]);
+            Assert.AreEqual("def", accessor["B"]);
+        }
+
+        [TestMethod]
         public void TestPrivateTypeAccess()
         {
             var obj = new Private { A = 123, B = "def" };
 
             var accessor = ObjectAccessor.Create(obj);
-            Assert.Equal(123, accessor["A"]);
-            Assert.Equal("def", accessor["B"]);
+            Assert.AreEqual(123, accessor["A"]);
+            Assert.AreEqual("def", accessor["B"]);
         }
 
-        [Fact]
+        [TestMethod]
         public void TestPrivateTypeCtor()
         {
-            var accessor = TypeAccessor.Create(typeof (Private));
-            Assert.True(accessor.CreateNewSupported);
+            var accessor = TypeAccessor.Create(typeof(Private));
+            Assert.IsTrue(accessor.CreateNewSupported);
             object obj = accessor.CreateNew();
-            Assert.NotNull(obj);
-            Assert.IsType<Private>(obj);
+            Assert.IsNotNull(obj);
+            Assert.IsInstanceOfType(obj, typeof(Private));
         }
 
-        private sealed class Private
-        {
-            public int A { get; set; }
-            public string B { get; set; }
-        }
+        #endregion
     }
-
-
 }

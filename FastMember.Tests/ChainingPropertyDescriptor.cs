@@ -1,108 +1,120 @@
 using System;
 using System.ComponentModel;
 
-namespace Hyper.ComponentModel {
-    public abstract class ChainingPropertyDescriptor : PropertyDescriptor {
-        private readonly PropertyDescriptor _root;
-        protected PropertyDescriptor Root { get { return _root; } }
+namespace FastMember.Tests
+{
+    public abstract class ChainingPropertyDescriptor : PropertyDescriptor
+    {
+        #region "Members"
+
+        private readonly PropertyDescriptor m_root;
+
+        #endregion
+
+        #region "Properties"
+
+        public override AttributeCollection Attributes => this.Root.Attributes;
+
+        public override string Category => this.Root.Category;
+
+        public override Type ComponentType => this.Root.ComponentType;
+
+        public override TypeConverter Converter => this.Root.Converter;
+
+        public override string Description => this.Root.Description;
+
+        public override bool DesignTimeOnly => this.Root.DesignTimeOnly;
+
+        public override string DisplayName => this.Root.DisplayName;
+
+        public override bool IsBrowsable => this.Root.IsBrowsable;
+
+        public override bool IsLocalizable => this.Root.IsLocalizable;
+
+        public override bool IsReadOnly => this.Root.IsReadOnly;
+
+        public override string Name => this.Root.Name;
+
+        public override Type PropertyType => this.Root.PropertyType;
+
+        public override bool SupportsChangeEvents => this.Root.SupportsChangeEvents;
+
+        protected PropertyDescriptor Root => this.m_root;
+
+        #endregion
+
+        #region "Constructors / Destructor"
+
         protected ChainingPropertyDescriptor(PropertyDescriptor root)
-            : base(root) {
-            _root = root;
+            : base(root)
+        {
+            this.m_root = root;
         }
-        public override void AddValueChanged(object component, EventHandler handler) {
-            Root.AddValueChanged(component, handler);
+
+        #endregion
+
+        #region "Methods"
+
+        public override void AddValueChanged(object component, EventHandler handler)
+        {
+            this.Root.AddValueChanged(component, handler);
         }
-        public override AttributeCollection Attributes {
-            get {
-                return Root.Attributes;
-            }
+
+        public override bool CanResetValue(object component)
+        {
+            return this.Root.CanResetValue(component);
         }
-        public override bool CanResetValue(object component) {
-            return Root.CanResetValue(component);
+
+        public override bool Equals(object obj)
+        {
+            return this.Root.Equals(obj);
         }
-        public override string Category {
-            get {
-                return Root.Category;
-            }
+
+        public override PropertyDescriptorCollection GetChildProperties(object instance, Attribute[] filter)
+        {
+            return this.Root.GetChildProperties(instance, filter);
         }
-        public override Type ComponentType {
-            get { return Root.ComponentType; }
+
+        public override object GetEditor(Type editorBaseType)
+        {
+            return this.Root.GetEditor(editorBaseType);
         }
-        public override TypeConverter Converter {
-            get {
-                return Root.Converter;
-            }
+
+        public override int GetHashCode()
+        {
+            return this.Root.GetHashCode();
         }
-        public override string Description {
-            get {
-                return Root.Description;
-            }
+
+        public override object GetValue(object component)
+        {
+            return this.Root.GetValue(component);
         }
-        public override bool DesignTimeOnly {
-            get {
-                return Root.DesignTimeOnly;
-            }
+
+        public override void RemoveValueChanged(object component, EventHandler handler)
+        {
+            this.Root.RemoveValueChanged(component, handler);
         }
-        public override string DisplayName {
-            get {
-                return Root.DisplayName;
-            }
+
+        public override void ResetValue(object component)
+        {
+            this.Root.ResetValue(component);
         }
-        public override bool Equals(object obj) {
-            return Root.Equals(obj);
+
+        public override void SetValue(object component, object value)
+        {
+            this.Root.SetValue(component, value);
         }
-        public override PropertyDescriptorCollection GetChildProperties(object instance, Attribute[] filter) {
-            return Root.GetChildProperties(instance, filter);
+
+        public override bool ShouldSerializeValue(object component)
+        {
+            return this.Root.ShouldSerializeValue(component);
         }
-        public override object GetEditor(Type editorBaseType) {
-            return Root.GetEditor(editorBaseType);
+
+        public override string ToString()
+        {
+            return this.Root.ToString();
         }
-        public override int GetHashCode() {
-            return Root.GetHashCode();
-        }
-        public override object GetValue(object component) {
-            return Root.GetValue(component);
-        }
-        public override bool IsBrowsable {
-            get {
-                return Root.IsBrowsable;
-            }
-        }
-        public override bool IsLocalizable {
-            get {
-                return Root.IsLocalizable;
-            }
-        }
-        public override bool IsReadOnly {
-            get { return Root.IsReadOnly; }
-        }
-        public override string Name {
-            get {
-                return Root.Name;
-            }
-        }
-        public override Type PropertyType {
-            get { return Root.PropertyType; }
-        }
-        public override void RemoveValueChanged(object component, EventHandler handler) {
-            Root.RemoveValueChanged(component, handler);
-        }
-        public override void ResetValue(object component) {
-            Root.ResetValue(component);
-        }
-        public override void SetValue(object component, object value) {
-            Root.SetValue(component, value);
-        }
-        public override bool ShouldSerializeValue(object component) {
-            return Root.ShouldSerializeValue(component);
-        }
-        public override bool SupportsChangeEvents {
-            get {
-                return Root.SupportsChangeEvents;
-            }
-        }
-        public override string ToString() {
-            return Root.ToString();
-        }
+
+        #endregion
     }
 }
